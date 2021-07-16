@@ -1,20 +1,29 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"net/http"
+	"os"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/lucifez385/golang-line-notify/router"
+	"github.com/gin-gonic/gin"
+	_ "github.com/heroku/x/hmetrics/onload"
 )
 
 func main() {
-	app := fiber.New()
+	port := os.Getenv("PORT")
 
-	app.Get("/healthz", func(c *fiber.Ctx) error {
-		return c.SendString("Server is running 👋!")
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
+
+	router := gin.New()
+	router.Use(gin.Logger())
+	router.LoadHTMLGlob("templates/*.tmpl.html")
+	router.Static("/static", "static")
+
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.tmpl.html", nil)
 	})
 
-	router.V1(app)
-	app.Listen(":8080")
-	fmt.Println("Server is running")
+	router.Run(":" + port)
 }

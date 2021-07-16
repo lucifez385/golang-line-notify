@@ -1,29 +1,45 @@
 package main
 
 import (
-	"log"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
-
-	"github.com/gin-gonic/gin"
-	_ "github.com/heroku/x/hmetrics/onload"
 )
 
-func main() {
-	port := os.Getenv("PORT")
+type addressBook struct {
+	Firstname string
+	Lastname  string
+	Code      int
+	Phone     string
+}
 
-	if port == "" {
-		log.Fatal("$PORT must be set")
+func getAddressBookAll(w http.ResponseWriter, r *http.Request) {
+	addBook := addressBook{
+		Firstname: "Chaiyarin",
+		Lastname:  "Niamsuwan",
+		Code:      1993,
+		Phone:     "0870940955",
 	}
+	json.NewEncoder(w).Encode(addBook)
+}
 
-	router := gin.New()
-	router.Use(gin.Logger())
-	router.LoadHTMLGlob("templates/*.tmpl.html")
-	router.Static("/static", "static")
-
-	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl.html", nil)
-	})
-
-	router.Run(":" + port)
+func homePage(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "Welcome to the HomePage!")
+}
+func handleRequest() {
+	http.HandleFunc("/", homePage)
+	http.HandleFunc("/getAddress", getAddressBookAll)
+	http.ListenAndServe(getPort(), nil)
+}
+func getPort() string {
+	var port = os.Getenv("PORT")
+	if port == "" {
+		port = "4747"
+		fmt.Println("INFO: No PORT environment variable detected, defaulting to " + port)
+	}
+	return ":" + port
+}
+func main() {
+	handleRequest() // ต้องนำ handleRequest มาใส่ใน main ด้วยนะครับ
 }

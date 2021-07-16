@@ -15,6 +15,6 @@ func main() {
 	})
 
 	router.V1(app)
-	app.Listen(":3000")
+	app.Listen(":8080")
 	fmt.Println("Server is running")
 }

@@ -44,17 +44,11 @@ func (l *LineNotify) SendNotify(c *fiber.Ctx) error {
 	params := url.Values{}
 	params.Add("message", message)
 
-	req, err := http.NewRequest(http.MethodPost, urlLINEAPI+"/notify", strings.NewReader(params.Encode()))
-	if err != nil {
-		return err
-	}
+	req, _ := http.NewRequest(http.MethodPost, urlLINEAPI+"/notify", strings.NewReader(params.Encode()))
+
 	req.Header.Add("Authorization", "Bearer "+token)
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
-	if err != nil {
-		fmt.Printf("%v", err)
-		return c.Status(500).JSON(err)
-	}
 	resp, err := http.DefaultClient.Do(req)
 
 	if err != nil {

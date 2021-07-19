@@ -65,12 +65,12 @@ func (l *LineNotify) SendNotify(c *fiber.Ctx) error {
 
 	if resp.StatusCode == http.StatusOK {
 		respBody, _ := ioutil.ReadAll(resp.Body)
-		fmt.Printf("%v", respBody)
 		return c.Status(resp.StatusCode).JSON(fiber.Map{
 			"body": respBody,
 		})
+	} else {
+		return c.Status(resp.StatusCode).JSON(fiber.Map{
+			"body": resp.Body.Close(),
+		})
 	}
-	return c.Status(resp.StatusCode).JSON(fiber.Map{
-		"body": resp.Body,
-	})
 }
